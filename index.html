@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harry Potter Complete Reading Site</title>
+  <style>
+    :root {
+      --navy-900: #041733;
+      --navy-700: #0b2f61;
+      --navy-500: #134b8a;
+      --gold-500: #f2c94c;
+      --ivory: #f7f1e3;
+      --slate: #cfd8e3;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Baskerville", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+      background: radial-gradient(circle at 20% 20%, #0e3268 0%, #0b2952 35%, var(--navy-900) 75%);
+      color: var(--ivory);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+    }
+
+    .shell {
+      width: min(960px, 100%);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(6px);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(24px, 4vw, 36px);
+      letter-spacing: 0.4px;
+    }
+
+    .subtitle {
+      margin: 0 0 28px;
+      color: var(--slate);
+      font-size: 15px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .book-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .book-visual svg {
+      width: 220px;
+      height: 160px;
+      filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.45));
+    }
+
+    #bookDescription {
+      white-space: pre-wrap;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    .progress-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .bar-track {
+      position: relative;
+      width: 100%;
+      height: 18px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .bar-fill {
+      position: absolute;
+      inset: 0;
+      width: 0%;
+      background: linear-gradient(90deg, #f7d074, #f2b633, #f5d88b);
+      box-shadow: 0 0 18px rgba(242, 185, 60, 0.6);
+      transition: width 0.35s ease, filter 0.35s ease;
+    }
+
+    .bar-fill.glow {
+      filter: brightness(1.15);
+    }
+
+    .stat-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--slate);
+    }
+
+    .inputs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input[type="number"] {
+      flex: 1;
+      min-width: 140px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--ivory);
+      font-size: 15px;
+      outline: none;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="number"]:focus {
+      border-color: rgba(242, 185, 60, 0.7);
+      box-shadow: 0 0 0 3px rgba(242, 185, 60, 0.2);
+    }
+
+    button {
+      background: linear-gradient(135deg, #f2c94c, #f7b733);
+      color: #10203d;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .book-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 10px;
+    }
+
+    .pill {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 12px;
+      text-align: center;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--ivory);
+      cursor: pointer;
+      transition: border 0.18s ease, background 0.18s ease, transform 0.18s ease;
+    }
+
+    .pill:hover {
+      border-color: rgba(242, 185, 60, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .pill.active {
+      border-color: rgba(242, 185, 60, 0.9);
+      background: rgba(242, 185, 60, 0.14);
+      color: #0f1f38;
+      font-weight: 700;
+    }
+
+    .note {
+      color: var(--slate);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <h1>Welcome to the Harry Potter Complete Reading Site</h1>
+    <p class="subtitle">Track progress · Pick your current book · Finish every page</p>
+
+    <div class="grid">
+      <section class="card book-visual">
+        <svg viewBox="0 0 320 220" aria-hidden="true">
+          <defs>
+            <linearGradient id="cover" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#123a78"/>
+              <stop offset="80%" stop-color="#0b2344"/>
+            </linearGradient>
+            <linearGradient id="pages" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#f9f3e7"/>
+              <stop offset="100%" stop-color="#d9c9b3"/>
+            </linearGradient>
+          </defs>
+          <rect x="52" y="24" width="190" height="172" rx="14" fill="url(#cover)"/>
+          <rect x="210" y="32" width="26" height="160" rx="6" fill="#0a1b36"/>
+          <rect x="78" y="48" width="140" height="126" rx="10" fill="url(#pages)"/>
+          <rect x="76" y="48" width="8" height="126" fill="#c1b29d"/>
+          <rect x="210" y="46" width="12" height="130" rx="5" fill="#081730"/>
+          <path d="M92 62h108M92 78h108M92 94h108M92 110h108M92 126h108M92 142h108" stroke="#cbbba5" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+          <rect x="98" y="66" width="96" height="18" rx="9" fill="#0f2546" opacity="0.72"/>
+          <text x="146" y="80" text-anchor="middle" fill="#f2c94c" font-family="Georgia, serif" font-size="14" letter-spacing="1">Book Seven</text>
+          <rect x="56" y="34" width="10" height="154" fill="#0c203c" opacity="0.72"/>
+          <rect x="56" y="172" width="190" height="14" rx="6" fill="#0f2346"/>
+        </svg>
+        <p class="note" id="bookDescription">A thick tome awaits. Track how far you have ventured through this book.</p>
+      </section>
+
+      <section class="card progress-wrap">
+        <div>
+          <div id="barTrack" class="bar-track" aria-label="Progress toward selected book pages">
+            <div class="bar-fill" id="barFill"></div>
+          </div>
+          <div class="stat-line">
+            <span id="pageStat">0 pages</span>
+            <span id="percentStat">0%</span>
+          </div>
+        </div>
+
+        <div class="inputs">
+          <label class="sr-only" for="pageInput">Pages read</label>
+          <input id="pageInput" type="number" min="0" placeholder="Enter pages read">
+          <button id="updateBtn" type="button">Update Progress</button>
+        </div>
+        <p class="note" id="clampNote"></p>
+
+        <div>
+          <p style="margin: 6px 0 10px; font-weight: 700;">Select your current book:</p>
+          <div class="book-picker" id="bookPicker"></div>
+          <p class="note" id="bookNote">Currently following: Book 7</p>
+        </div>
+      </section>
+    </div>
+    <p class="note" style="margin-top: 18px;">Notice: This site is based on the UK edition of Harry Potter.</p>
+  </main>
+
+  <script>
+    const bookPages = {
+      '1': 352,
+      '2': 384,
+      '3': 480,
+      '4': 640,
+      '5': 816,
+      '6': 560,
+      '7': 640,
+      'cc': 336
+    };
+
+    const bookDescriptions = {
+      '1': `Harry Potter and the Sorcerer's Stone (Book 1)
+Harry Potter, an orphan who survived the attack of the dark wizard Voldemort as a baby, grows up with his cruel relatives, the Dursleys, unaware that he is a wizard. On his eleventh birthday, he receives a mysterious letter inviting him to Hogwarts School of Witchcraft and Wizardry. Despite his uncle's attempts to stop him, Harry learns the truth about his magical identity. Guided by the Hogwarts gamekeeper Rubeus Hagrid, Harry enters the magical world, makes new friends, and begins his life at Hogwarts-where he soon discovers that dark secrets still surround the fall of Voldemort.`,
+      '2': `Harry Potter and the Chamber of Secrets (Book 2)
+Harry's second year at Hogwarts begins after a disastrous summer with the Dursleys and a warning from the house-elf Dobby not to return to school. Ignoring the warning, Harry goes back to Hogwarts, where strange and frightening events begin to occur. Students are mysteriously attacked and turned to stone, and whispers of the legendary Chamber of Secrets spread through the school. As fear grows, Harry and his friends Ron and Hermione must uncover the truth behind the chamber before Hogwarts is forced to close forever.`,
+      '3': `Harry Potter and the Prisoner of Azkaban (Book 3)
+During another difficult summer with the Dursleys, Harry accidentally uses magic and runs away from home. Soon he learns shocking news: Sirius Black, a dangerous wizard who escaped from the wizard prison Azkaban, is believed to be hunting him. Returning to Hogwarts for his third year, Harry faces new threats, including terrifying Dementors guarding the school. As the mystery surrounding Sirius Black unfolds, Harry discovers unexpected truths about his parents' past and the people he thought he could`,
+      '4': `Harry Potter and the Goblet of Fire (Book 4)
+Harry Potter, now a fourth-year student at Hogwarts, watches the Quidditch World Cup with the Weasley family during summer vacation.
+
+After the match, amidst the festive atmosphere of the tent village, Death Eaters who worship Voldemort suddenly appear and unleash a terrorist attack. As they plunge the surroundings into a frenzy, Voldemort's symbol, the 'Dark Mark,' appears in the sky.
+
+Upon returning to Hogwarts for the new semester, Harry Potter hears the unexpected news from Headmaster Albus Dumbledore: "This year, the Triwizard Tournament will be held instead of the Quidditch games."`,
+      '5': `Harry Potter and the Order of the Phoenix (Book 5)
+Whenever Hogwarts School of Witchcraft and Wizardry goes on vacation, Harry Potter is forced to stay at his aunt's house, 4 Privet Drive. Harry, who used to thoroughly tease his aunt Petunia Dursley, uncle Vernon Dursley, and cousin Dudley Dursley-who constantly tormented him-by threatening to use magic, suddenly finds himself caught up in an unexpected situation. Dementors, the guards of Azkaban, appear at 4 Privet Drive and attack Harry. Harry uses magic to protect himself and Dudley, but faces a crisis where he must appear at a hearing on charges of using magic in front of Muggles despite being a minor.
+
+After many twists and turns, Harry goes to 12 Grimmauld Road in London, where his friends Ron Weasley and Hermione Granger are. That house is the secret headquarters of the Order of the Phoenix and the home of his godfather, Sirius Black. The Order of the Phoenix is a secret organization formed by wizards who sided with Albus Dumbledore to fight against the reappearance of the dark wizard Voldemort. Harry insists that he wants to join the Order of the Phoenix as well, but is refused because he is a minor.`,
+      '6': `Harry Potter and the Half-Blood Prince (Book 6)
+Following the bloody battle between the Death Eaters and the Order of the Phoenix that erupted in the Ministry of Magic's Department of Mysteries, Voldemort and the Death Eaters revel in the heightened atmosphere in Muggle-world London, England, where they run rampant and disrupt order, in stark contrast to the Order of the Phoenix, who are still reeling from the shock and grief of losing Sirius Black.
+
+On the first day of the new semester, as sixth-year students are registering for classes, Harry is advised by Professor Minerva McGonagall to sign up for Potions and begins attending an N.E.W.T.-level Potions class.
+
+Then, one day, Headmaster Dumbledore summons Harry to his office and asks to have private lessons with him...`,
+      '7': `Harry Potter and the Deathly Hallows (Book 7)
+Ahead of Harry's seventeenth birthday, the Dursley family leaves their home. This is because the moment Harry turns seventeen-the age of adulthood in the wizarding world-the protective spells cast on the Dursleys' house will break, leaving them fully exposed to Voldemort's attacks. The Order of the Phoenix attempts to evacuate Harry to safety the day before his birthday. Six companions, disguised as Harry, fly up on broomsticks and scatter, but for some reason, Death Eaters are waiting to attack them. Barely reaching a hideout, Harry unfortunately learns of George's injury, Mad-Eye Moody's death, and Mundungus's escape. While hiding in the Burrow, Harry and his friends receive Dumbledore's mementos and live peacefully for a while. However, on the day of Bill and Fleur's wedding, they are attacked by Death Eaters. Having barely escaped, Harry, Ron, and Hermione wander in search of Horcruxes…`,
+      'cc': `Harry Potter and the Cursed Child
+September 1, 2017, Platform 9¾ at King's Cross Station. Harry, the Head of the Auror Office-now a full-fledged hero, working adult, and parent-along with Ginny, the Quidditch reporter for the Daily Prophet, Ron, the owner of the Joke Shop, and Hermione, the Head of the Department of Wizarding Law Enforcement, have come to see off the children leaving for Hogwarts. Harry's second son, Albus Severus Potter, is slightly worried about what will happen if he ends up in Slytherin, but Harry reminds him of the origin of his name and advises him that the most important thing is his own choice. As the train departs and Ginny says that Albus will be fine, Harry says, "I know," and touches the scar on his forehead that has not hurt once in the past 19 years.`
+    };
+
+    let currentBook = '7';
+    let totalPages = bookPages[currentBook];
+    const pageInput = document.getElementById('pageInput');
+    const barFill = document.getElementById('barFill');
+    const pageStat = document.getElementById('pageStat');
+    const percentStat = document.getElementById('percentStat');
+    const clampNote = document.getElementById('clampNote');
+    const bookPicker = document.getElementById('bookPicker');
+    const bookNote = document.getElementById('bookNote');
+    const updateBtn = document.getElementById('updateBtn');
+    const barTrack = document.getElementById('barTrack');
+    const bookDescription = document.getElementById('bookDescription');
+
+    const books = [
+      { id: '1', label: 'Book 1' },
+      { id: '2', label: 'Book 2' },
+      { id: '3', label: 'Book 3' },
+      { id: '4', label: 'Book 4' },
+      { id: '5', label: 'Book 5' },
+      { id: '6', label: 'Book 6' },
+      { id: '7', label: 'Book 7' },
+      { id: 'cc', label: 'Cursed Child' }
+    ];
+
+    function formatNumber(value) {
+      return value.toLocaleString('en-US');
+    }
+
+    function updateBar(pages) {
+      const clamped = Math.max(0, Math.min(pages, totalPages));
+      const percent = totalPages === 0 ? 0 : Math.round((clamped / totalPages) * 1000) / 10;
+      const percentText = percent % 1 === 0 ? percent.toFixed(0) : percent.toFixed(1);
+      barFill.style.width = `${totalPages === 0 ? 0 : (clamped / totalPages) * 100}%`;
+      barFill.classList.add('glow');
+      pageStat.textContent = `${formatNumber(clamped)} / ${formatNumber(totalPages)} pages`;
+      percentStat.textContent = `${percentText}%`;
+      barTrack.setAttribute('aria-label', `Progress toward ${formatNumber(totalPages)} pages`);
+
+      if (clamped !== pages) {
+        clampNote.textContent = `Note: Progress is capped between 0 and ${formatNumber(totalPages)} pages.`;
+      } else {
+        clampNote.textContent = '';
+      }
+
+      setTimeout(() => barFill.classList.remove('glow'), 400);
+    }
+
+    function handleUpdate() {
+      const value = Number(pageInput.value);
+      const safeValue = Number.isFinite(value) ? value : 0;
+      updateBar(safeValue);
+    }
+
+    function setBook(bookId) {
+      currentBook = bookId;
+      totalPages = bookPages[bookId] || 0;
+      const label = bookId === 'cc' ? 'Harry Potter and the Cursed Child' : `Book ${bookId}`;
+      bookNote.textContent = `Currently following: ${label} (${formatNumber(totalPages)} pages)`;
+      pageInput.placeholder = `Enter pages read (0 - ${formatNumber(totalPages)})`;
+      pageInput.max = totalPages;
+      bookDescription.textContent = bookDescriptions[bookId] || '';
+      document.querySelectorAll('.pill').forEach((el) => el.classList.remove('active'));
+      const active = document.querySelector(`[data-book-id="${bookId}"]`);
+      if (active) active.classList.add('active');
+      handleUpdate();
+    }
+
+    function renderBookPicker() {
+      bookPicker.innerHTML = '';
+      books.forEach((book) => {
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = 'pill' + (book.id === '7' ? ' active' : '');
+        pill.textContent = book.label;
+        pill.dataset.bookId = book.id;
+        pill.addEventListener('click', () => {
+          setBook(book.id);
+        });
+        bookPicker.appendChild(pill);
+      });
+    }
+
+    updateBtn.addEventListener('click', handleUpdate);
+    pageInput.addEventListener('keyup', (event) => {
+      if (event.key === 'Enter') {
+        handleUpdate();
+      }
+    });
+
+    renderBookPicker();
+    setBook(currentBook);
+  </script>
+</body>
+</html>
